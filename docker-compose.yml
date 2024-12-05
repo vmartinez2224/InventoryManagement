@@ -1,0 +1,33 @@
+services:
+  inventoryManagement_app:
+    container_name: inventoryManagement_app
+    build: .
+    ports:
+      - 8080:8080
+    environment:
+      - DATABASE_URL=jdbc:postgresql://inventorymanagement_app_db:5432/inventory_management_app
+      - DATABASE_USERNAME=root
+      - DATABASE_PASSWORD=password
+    depends_on:
+      - inventory_management_app
+    working_dir: /app
+    command: mvn spring-boot:run
+
+  inventory_management_db:
+    container_name: inventory_management_db
+    image: postgres:12
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: pasword
+      POSTGRES_DB: inventory_management
+  inventory_management_app_test:
+    container_name: inventory_management_app_test
+    image: maven:3.8.4-openjdk-17-slim
+    working_dir: /app
+    volumes:
+      - .:/app
+    depends_on:
+      - inventory_management
+    command: mvn test
